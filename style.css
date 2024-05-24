@@ -1,0 +1,102 @@
+        * {
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Bebas Neue", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        body {
+           
+}
+        ::-webkit-scrollbar {
+            width: 3px;
+            height: 3px;
+        }
+        ::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #ff0000;
+        }
+        canvas {
+             border: 1px solid black;
+        }
+        .member-menu {
+            position: fixed;
+            left: 50%;
+            bottom: 10px;
+            transform: translateX(-50%);
+            z-index: 99;
+        }
+        .member-menu>input {
+            width: 25px;
+            height: 25px;
+        }
+        #prt {
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            left: 10px;
+            bottom: 10px;
+            display: none;
+            z-index: 999;
+            background-color: white;
+            border: 1px solid black;
+            box-shadow: 1px 1px 13px #adadad;
+        }
+        #s {
+            width: 100%;
+            height: 100%;
+        }
+        #x {
+            cursor: pointer;
+            z-index: 999;
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            font-size: 20px;
+        }
+          #x:hover {
+            transform: scale(1.5);
+            -webkit-transform: scale(1.5);
+            -moz-transform: scale(1.5);
+            -ms-transform: scale(1.5);
+            -o-transform: scale(1.5);
+        }
+        #loading{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+        .mouse{
+            position: absolute;
+            z-index: 999;
+            top: var(--mouseY) ;
+            left: var(--mouseX) ;
+        }
+        .mouse:hover{
+            display: none;
+        }
+        #id{
+            position: fixed;
+            top: 5px;
+            right: 10px;
+            z-index:10999;
+            font-size: 10px; 
+        }
+        #id:hover{
+            margin-right: 20px;
+            transform: scale(2);
+            -webkit-transform: scale(2);
+            -moz-transform: scale(2);
+            -ms-transform: scale(2);
+            -o-transform: scale(2);
+}
