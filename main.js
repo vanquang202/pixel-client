@@ -2,7 +2,7 @@ const url = "https://adpixel.jimdev.id.vn";
 const canvas = document.getElementById("gameCanvas");
 const context = canvas.getContext("2d");
 let gridSize, rows, cols, grid, echo, idU;
-
+let pause = [];
 function createCursor(idU_F) {
   let element = document.createElement("div");
   element.setAttribute("id", idU_F);
@@ -36,25 +36,53 @@ function start() {
     withCredentials: true,
   });
   echo = window.Echo.join("pixel")
-    .here((users) => {})
-    .joining((user) => {})
+    .here((users) => {
+      console.log("U here ", users);
+    })
+    .joining((user) => {
+      console.log("U join", user);
+    })
     .leaving(async (user) => {});
+  echo.listenForWhisper("pause", (event) => {
+    pause.push(event);
+    console.log(event);
+  });
   window.onload = async function () {
-    await fetch(`${url}/api/get-pixel`)
-      .then((res) => res.json())
-      .then(async (res) => {
-        grid = res.data;
-        gridSize = res.gridSize;
-        rows = res.rows;
-        cols = res.cols;
-        canvasHeight = res.canvasHeight;
-        canvasWidth = res.canvasWidth;
-        await run();
-        document.getElementById("loading").style.display = "none";
-      })
-      .catch((err) => {});
+    grid = [];
+
+    echo.listenForWhisper("client-" + idU, (event) => {
+      if (event.grid) grid.push(...JSON.parse(event.grid));
+      console.log(grid);
+      if (event.isDone) {
+        canvasWidth = event.canvasWidth;
+        canvasHeight = event.canvasHeight;
+        gridSize = event.gridSize;
+        rows = event.rows;
+        cols = event.cols;
+        run();
+      }
+    });
+
+    function getClientGrid() {
+      echo.whisper("call", {
+        idU: idU,
+      });
+    }
+    getClientGrid();
 
     function run() {
+      if (pause.length > 0) {
+        for (let index = 0; index < pause.length; index++) {
+          const event = pause[index];
+          context.fillStyle = event.selectedColor;
+          context.fillRect(
+            event.col,
+            event.row,
+            event.gridSize,
+            event.gridSize
+          );
+        }
+      }
       echo.listenForWhisper("send-client", (event) => {
         context.fillStyle = event.selectedColor;
         context.fillRect(event.col, event.row, event.gridSize, event.gridSize);
@@ -93,14 +121,7 @@ function start() {
           gridSize,
           gridSize
         );
-        await fetch(
-          `${url}/api/send-pixel?clickedRow=${clickedRow}&clickedCol=${clickedCol}&selectedColor=${selectedColor.replace(
-            "#",
-            ""
-          )}`
-        )
-          .then((res) => {})
-          .catch((err) => location.reload());
+
         await echo.whisper("send-client", {
           col: clickedCol * gridSize,
           row: clickedRow * gridSize,
@@ -109,10 +130,24 @@ function start() {
           idU: idU,
           mouseX: mouseX,
           mouseY: mouseY,
+          clickedRow: clickedRow,
+          clickedCol: clickedCol,
+        });
+        await echo.whisper("pause", {
+          col: clickedCol * gridSize,
+          row: clickedRow * gridSize,
+          gridSize: gridSize,
+          selectedColor: selectedColor,
+          idU: idU,
+          mouseX: mouseX,
+          mouseY: mouseY,
+          clickedRow: clickedRow,
+          clickedCol: clickedCol,
         });
       });
 
       function drawGrid() {
+        document.getElementById("loading").style.display = "none";
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         for (let row = 0; row < rows; row++) {
           for (let col = 0; col < cols; col++) {
