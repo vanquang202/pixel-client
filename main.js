@@ -3,6 +3,11 @@ const canvas = document.getElementById("gameCanvas");
 const context = canvas.getContext("2d");
 let gridSize, rows, cols, grid, echo, idU;
 let pause = [];
+let colActive = 0;
+let rowActive = 0;
+let colorActive;
+let mouseXActive = 0;
+let mouseYActive = 0;
 function createCursor(idU_F) {
   let element = document.createElement("div");
   element.setAttribute("id", idU_F);
@@ -36,24 +41,24 @@ function start() {
     withCredentials: true,
   });
   echo = window.Echo.join("pixel")
-    .here((users) => {
-      console.log("U here ", users);
-    })
-    .joining((user) => {
-      console.log("U join", user);
-    })
+    .here((users) => {})
+    .joining((user) => {})
     .leaving(async (user) => {});
   echo.listenForWhisper("pause", (event) => {
     pause.push(event);
-    console.log(event);
   });
   window.onload = async function () {
     grid = [];
-
+    let count = 12;
+    let process = 0;
+    let loadProcess = document.getElementById("load-process");
     echo.listenForWhisper("client-" + idU, (event) => {
+      process++;
+      loadProcess.innerHTML =
+        "Loading: " + Math.round((process / count) * 100) + " %";
       if (event.grid) grid.push(...JSON.parse(event.grid));
-      console.log(grid);
       if (event.isDone) {
+        loadProcess.style.display = "none";
         canvasWidth = event.canvasWidth;
         canvasHeight = event.canvasHeight;
         gridSize = event.gridSize;
@@ -62,6 +67,12 @@ function start() {
         run();
       }
     });
+
+    setTimeout(() => {
+      if (process == 0) {
+        location.reload();
+      }
+    }, 3000);
 
     function getClientGrid() {
       echo.whisper("call", {
@@ -107,19 +118,49 @@ function start() {
         const audio = document.createElement("video");
         audio.src = "./click.mp3";
         audio.play();
+
         let rect = canvas.getBoundingClientRect();
         let mouseX = event.clientX - rect.left;
         let mouseY = event.clientY - rect.top;
+        mouseXActive = mouseX;
+        mouseYActive = mouseY;
+
+        if (colorActive) {
+          grid[rowActive][colActive] = colorActive;
+          context.fillStyle = colorActive;
+          context.fillRect(
+            colActive * gridSize,
+            rowActive * gridSize,
+            gridSize,
+            gridSize
+          );
+        }
 
         let clickedRow = Math.floor(mouseY / gridSize);
         let clickedCol = Math.floor(mouseX / gridSize);
+
+        rowActive = clickedRow;
+        colActive = clickedCol;
+        colorActive = selectedColor;
+
         grid[clickedRow][clickedCol] = selectedColor;
-        context.fillStyle = selectedColor;
+        console.log("col", clickedCol);
+        console.log("row", clickedRow);
+
+        context.fillStyle = "orange";
         context.fillRect(
           clickedCol * gridSize,
           clickedRow * gridSize,
           gridSize,
           gridSize
+        );
+
+        context.fillStyle = selectedColor;
+        context.fillRect(
+          clickedCol * gridSize + 0.5,
+          clickedRow * gridSize + 0.5,
+          gridSize - 1,
+          gridSize - 1
         );
 
         await echo.whisper("send-client", {
@@ -133,6 +174,7 @@ function start() {
           clickedRow: clickedRow,
           clickedCol: clickedCol,
         });
+
         await echo.whisper("pause", {
           col: clickedCol * gridSize,
           row: clickedRow * gridSize,
@@ -144,6 +186,123 @@ function start() {
           clickedRow: clickedRow,
           clickedCol: clickedCol,
         });
+      });
+      function setLocation() {
+        context.fillStyle = "orange";
+        context.fillRect(
+          colActive * gridSize,
+          rowActive * gridSize,
+          gridSize,
+          gridSize
+        );
+        colorActive = grid[rowActive][colActive];
+        context.fillStyle = grid[rowActive][colActive];
+        context.fillRect(
+          colActive * gridSize + 0.5,
+          rowActive * gridSize + 0.5,
+          gridSize - 1,
+          gridSize - 1
+        );
+      }
+      document.addEventListener("keydown", (event) => {
+        switch (event.key) {
+          case "w":
+            if (colorActive) {
+              context.fillStyle = grid[rowActive][colActive];
+              context.fillRect(
+                colActive * gridSize,
+                rowActive * gridSize,
+                gridSize,
+                gridSize
+              );
+            }
+            mouseYActive = mouseYActive - 4;
+            rowActive = rowActive - 1;
+            setLocation();
+            break;
+          case "s":
+            if (colorActive) {
+              context.fillStyle = grid[rowActive][colActive];
+              context.fillRect(
+                colActive * gridSize,
+                rowActive * gridSize,
+                gridSize,
+                gridSize
+              );
+            }
+            mouseYActive = mouseYActive + 4;
+            rowActive = rowActive + 1;
+            setLocation();
+            break;
+          case "a":
+            if (colorActive) {
+              context.fillStyle = grid[rowActive][colActive];
+              context.fillRect(
+                colActive * gridSize,
+                rowActive * gridSize,
+                gridSize,
+                gridSize
+              );
+            }
+            mouseXActive = mouseXActive - 4;
+            colActive = colActive - 1;
+            setLocation();
+            break;
+          case "d":
+            if (colorActive) {
+              context.fillStyle = grid[rowActive][colActive];
+              context.fillRect(
+                colActive * gridSize,
+                rowActive * gridSize,
+                gridSize,
+                gridSize
+              );
+            }
+            mouseXActive = mouseXActive + 4;
+            colActive = colActive + 1;
+            setLocation();
+            break;
+          case "Enter":
+            const audio = document.createElement("video");
+            audio.src = "./click.mp3";
+            audio.play();
+            grid[rowActive][colActive] = selectedColor;
+            colorActive = selectedColor;
+            context.fillStyle = selectedColor;
+            context.fillRect(
+              colActive * gridSize,
+              rowActive * gridSize,
+              gridSize,
+              gridSize
+            );
+
+            echo.whisper("send-client", {
+              col: colActive * gridSize,
+              row: rowActive * gridSize,
+              gridSize: gridSize,
+              selectedColor: selectedColor,
+              idU: idU,
+              mouseX: mouseXActive,
+              mouseY: mouseYActive,
+              clickedRow: rowActive,
+              clickedCol: colActive,
+            });
+
+            echo.whisper("pause", {
+              col: colActive * gridSize,
+              row: rowActive * gridSize,
+              gridSize: gridSize,
+              selectedColor: selectedColor,
+              idU: idU,
+              mouseX: mouseXActive,
+              mouseY: mouseYActive,
+              clickedRow: rowActive,
+              clickedCol: colActive,
+            });
+
+            setLocation();
+            break;
+        }
       });
 
       function drawGrid() {

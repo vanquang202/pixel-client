@@ -85,6 +85,7 @@
         .mouse:hover{
             display: none;
         }
+      
         #id{
             position: fixed;
             top: 5px;
@@ -99,4 +100,17 @@
             -moz-transform: scale(2);
             -ms-transform: scale(2);
             -o-transform: scale(2);
-}
+        }
+
+        #load-process{
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999999;
+            text-align: center;
+            width: 100%;
+            background-color: rgb(0, 217, 255);
+            padding: 1px;
+            font-size: 25px;
+            color: white;
+        }
