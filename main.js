@@ -41,16 +41,15 @@ function start() {
     withCredentials: true,
   });
   echo = window.Echo.join("pixel");
-  echo_map = window.Echo.join("map_pixel");
-  echo.listenForWhisper("pause", (event) => {
-    pause.push(event);
-  });
+  // echo.listenForWhisper("pause", (event) => {
+  //   pause.push(event);
+  // });
   window.onload = async function () {
     grid = [];
     let count = 2400;
     let process = 0;
     let loadProcess = document.getElementById("load-process");
-    echo_map.listenForWhisper("client-" + idU, (event) => {
+    echo.listenForWhisper("client-" + idU, (event) => {
       process++;
       loadProcess.innerHTML =
         "Loading: " + Math.round((process / count) * 100) + " %";
@@ -67,7 +66,7 @@ function start() {
     });
 
     function getClientGrid() {
-      echo_map.whisper("call", {
+      echo.whisper("call", {
         idU: idU,
       });
     }
