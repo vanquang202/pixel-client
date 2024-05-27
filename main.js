@@ -49,7 +49,7 @@ function start() {
   });
   window.onload = async function () {
     grid = [];
-    let count = 12;
+    let count = 2400;
     let process = 0;
     let loadProcess = document.getElementById("load-process");
     echo.listenForWhisper("client-" + idU, (event) => {
@@ -68,11 +68,11 @@ function start() {
       }
     });
 
-    setTimeout(() => {
-      if (process == 0) {
-        location.reload();
-      }
-    }, 3000);
+    // setTimeout(() => {
+    //   if (process == 0) {
+    //     location.reload();
+    //   }
+    // }, 5000);
 
     function getClientGrid() {
       echo.whisper("call", {
@@ -207,57 +207,53 @@ function start() {
       document.addEventListener("keydown", (event) => {
         switch (event.key) {
           case "w":
-            if (colorActive) {
-              context.fillStyle = grid[rowActive][colActive];
-              context.fillRect(
-                colActive * gridSize,
-                rowActive * gridSize,
-                gridSize,
-                gridSize
-              );
-            }
+            context.fillStyle = grid[rowActive][colActive] ?? "#FFFFFF";
+            context.fillRect(
+              colActive * gridSize,
+              rowActive * gridSize,
+              gridSize,
+              gridSize
+            );
+
             mouseYActive = mouseYActive - 4;
             rowActive = rowActive - 1;
             setLocation();
             break;
           case "s":
-            if (colorActive) {
-              context.fillStyle = grid[rowActive][colActive];
-              context.fillRect(
-                colActive * gridSize,
-                rowActive * gridSize,
-                gridSize,
-                gridSize
-              );
-            }
+            context.fillStyle = grid[rowActive][colActive] ?? "#FFFFFF";
+            context.fillRect(
+              colActive * gridSize,
+              rowActive * gridSize,
+              gridSize,
+              gridSize
+            );
+
             mouseYActive = mouseYActive + 4;
             rowActive = rowActive + 1;
             setLocation();
             break;
           case "a":
-            if (colorActive) {
-              context.fillStyle = grid[rowActive][colActive];
-              context.fillRect(
-                colActive * gridSize,
-                rowActive * gridSize,
-                gridSize,
-                gridSize
-              );
-            }
+            context.fillStyle = grid[rowActive][colActive] ?? "#FFFFFF";
+            context.fillRect(
+              colActive * gridSize,
+              rowActive * gridSize,
+              gridSize,
+              gridSize
+            );
+
             mouseXActive = mouseXActive - 4;
             colActive = colActive - 1;
             setLocation();
             break;
           case "d":
-            if (colorActive) {
-              context.fillStyle = grid[rowActive][colActive];
-              context.fillRect(
-                colActive * gridSize,
-                rowActive * gridSize,
-                gridSize,
-                gridSize
-              );
-            }
+            context.fillStyle = grid[rowActive][colActive] ?? "#FFFFFF";
+            context.fillRect(
+              colActive * gridSize,
+              rowActive * gridSize,
+              gridSize,
+              gridSize
+            );
+
             mouseXActive = mouseXActive + 4;
             colActive = colActive + 1;
             setLocation();
