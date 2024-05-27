@@ -69,6 +69,14 @@ function start() {
       echo.whisper("call", {
         idU: idU,
       });
+
+      setTimeout(() => {
+        if (process == 0) {
+          console.log("Reload connect");
+
+          getClientGrid();
+        }
+      }, 5000);
     }
     getClientGrid();
 
