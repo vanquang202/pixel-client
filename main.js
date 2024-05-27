@@ -46,10 +46,12 @@ function start() {
   // });
   window.onload = async function () {
     grid = [];
-    let count = 2400;
+    let count = 48;
     let process = 0;
     let loadProcess = document.getElementById("load-process");
     echo.listenForWhisper("client-" + idU, (event) => {
+      console.log("Process", process);
+
       process++;
       loadProcess.innerHTML =
         "Loading: " + Math.round((process / count) * 100) + " %";
