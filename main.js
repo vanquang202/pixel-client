@@ -40,10 +40,8 @@ function start() {
     host: `https://adpixel.jimdev.id.vn`,
     withCredentials: true,
   });
-  echo = window.Echo.join("pixel")
-    .here((users) => {})
-    .joining((user) => {})
-    .leaving(async (user) => {});
+  echo = window.Echo.join("pixel");
+  echo_map = window.Echo.join("map_pixel");
   echo.listenForWhisper("pause", (event) => {
     pause.push(event);
   });
@@ -52,7 +50,7 @@ function start() {
     let count = 2400;
     let process = 0;
     let loadProcess = document.getElementById("load-process");
-    echo.listenForWhisper("client-" + idU, (event) => {
+    echo_map.listenForWhisper("client-" + idU, (event) => {
       process++;
       loadProcess.innerHTML =
         "Loading: " + Math.round((process / count) * 100) + " %";
@@ -68,14 +66,8 @@ function start() {
       }
     });
 
-    // setTimeout(() => {
-    //   if (process == 0) {
-    //     location.reload();
-    //   }
-    // }, 5000);
-
     function getClientGrid() {
-      echo.whisper("call", {
+      echo_map.whisper("call", {
         idU: idU,
       });
     }
